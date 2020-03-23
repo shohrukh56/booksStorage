@@ -43,7 +43,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "name": "The great Getsby",
+  "name": "The great Getsbydasdwede",
   "description": "about history",
   "price": 5,
   "pic": "848"

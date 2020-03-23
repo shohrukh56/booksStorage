@@ -54,8 +54,6 @@ func (s *Service) Generate(context context.Context, request *RequestDTO, pool *p
 		return
 	}
 
-	//hash, err := bcrypt.GenerateFromPassword([]byte("hash"), bcrypt.DefaultCost)
-	//log.Print(hash)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(request.Password))
 	if err != nil {

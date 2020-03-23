@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/shohrukh56/mux/pkg/mux"
 	"github.com/shohruk56/BookStorage/cmd/product/app"
-	"github.com/shohruk56/BookStorage/pkg/core/product"
+	"github.com/shohruk56/BookStorage/pkg/core/Books"
 	"github.com/shohrukh56/DI/pkg/di"
 	"github.com/shohrukh56/jwt/pkg/jwt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,7 +20,7 @@ var (
 	port = flag.String("port", "9999", "Server port")
 	dsn  = flag.String("dsn", "postgres://user:pass@localhost:5430/books", "Postgres DSN")
 )
-//-host 0.0.0.0 -port 9999 -dsn postgres://user:pass@localhost:5430/product
+//-host 0.0.0.0 -port 9999 -dsn postgres://user:pass@localhost:5430/Books
 const (
 	envHost = "HOST"
 	envPort = "PORT"
@@ -50,7 +50,7 @@ func start(addr string, dsn string,  secret jwt.Secret) {
 	container.Provide(
 		app.NewServer,
 		mux.NewExactMux,
-		product.NewService,
+		Books.NewService,
 		func() DSN { return DSN(dsn) },
 		func() jwt.Secret { return secret },
 		func(dsn DSN) *pgxpool.Pool {

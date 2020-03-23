@@ -11,45 +11,40 @@ import (
 
 func (s Server) InitRoutes() {
 
-	s.router.GET(
-		"/",
-		s.handleIndex(),
-		logger.Logger("Index"),
-	)
 
 	s.router.GET(
+		"/api/products/{id}",
+		s.handleBooksByID(),
+		authenticated.Authenticated(jwt.IsContextNonEmpty),
+		jwt.JWT(reflect.TypeOf((*token.Payload)(nil)).Elem(), s.secret),
+		logger.Logger("get Books by id"),
+	)
+	s.router.GET(
 		"/api/products",
-		s.handleProductList(),
+		s.handleBooksList(),
 		authenticated.Authenticated(jwt.IsContextNonEmpty),
 		jwt.JWT(reflect.TypeOf((*token.Payload)(nil)).Elem(), s.secret),
 		logger.Logger("get list"),
 	)
 
-	s.router.GET(
+
+
+	s.router.DELETE(
 		"/api/products/{id}",
-		s.handleProductByID(),
+		s.handleDeleteBook(),
 		authenticated.Authenticated(jwt.IsContextNonEmpty),
+		authorized.Authorized([]string{"Admin"}, jwt.FromContext),
 		jwt.JWT(reflect.TypeOf((*token.Payload)(nil)).Elem(), s.secret),
-		logger.Logger("get product by id"),
+		logger.Logger("delete Books"),
 	)
 
 	s.router.POST(
 		"/api/products/{id}",
-		s.handProduct(),
+		s.handBook(),
 		authenticated.Authenticated(jwt.IsContextNonEmpty),
 		authorized.Authorized([]string{"Admin"}, jwt.FromContext),
 		jwt.JWT(reflect.TypeOf((*token.Payload)(nil)).Elem(), s.secret),
-		logger.Logger("post product"),
+		logger.Logger("post Books"),
 	)
-
-	s.router.DELETE(
-		"/api/products/{id}",
-		s.handleDeleteProduct(),
-		authenticated.Authenticated(jwt.IsContextNonEmpty),
-		authorized.Authorized([]string{"Admin"}, jwt.FromContext),
-		jwt.JWT(reflect.TypeOf((*token.Payload)(nil)).Elem(), s.secret),
-		logger.Logger("delete product"),
-	)
-
 
 }
