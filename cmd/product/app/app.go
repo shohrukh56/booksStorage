@@ -1,12 +1,14 @@
 package app
 
 import (
-	"github.com/shohrukh56/mux/pkg/mux"
 	"github.com/shohruk56/BookStorage/pkg/core/product"
 	"github.com/shohrukh56/jwt/pkg/jwt"
+	"github.com/shohrukh56/mux/pkg/mux"
 	"github.com/shohrukh56/rest/pkg/rest"
+	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 )
 
@@ -28,6 +30,28 @@ func (s Server) Start() {
 	s.InitRoutes()
 }
 
+func (s *Server) handleIndex() http.HandlerFunc {
+
+	var (
+		tpl *template.Template
+		err error
+	)
+	tpl, err = template.ParseFiles(
+		filepath.Join("web/templates", "index.gohtml"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	return func(writer http.ResponseWriter, request *http.Request) {
+		// executes in many goroutines
+		// TODO: fetch data from multiple upstream services
+		err = tpl.Execute(writer, struct{ Title string }{Title: "auth",})
+		if err != nil {
+			log.Printf("error while executing template %s %v", tpl.Name(), err)
+		}
+	}
+
+}
 func (s Server) handleProductList() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		list, err := s.productSvc.ProductList(request.Context())
@@ -154,7 +178,7 @@ func (s Server) handProduct() http.HandlerFunc {
 			return
 		}
 		if id > 0 {
-			err = s.productSvc.UpdateProduct(request.Context(),int64(id), prod)
+			err = s.productSvc.UpdateProduct(request.Context(), int64(id), prod)
 			if err != nil {
 				http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				log.Print(err)

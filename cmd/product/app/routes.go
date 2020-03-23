@@ -11,6 +11,11 @@ import (
 
 func (s Server) InitRoutes() {
 
+	s.router.GET(
+		"/",
+		s.handleIndex(),
+		logger.Logger("Index"),
+	)
 
 	s.router.GET(
 		"/api/products",
